@@ -1,7 +1,8 @@
 import { expect } from "vitest";
 import type { Variant } from "@uno/shared";
 import { cardDefOf, deckSizeOf, defsFor, makeCardId } from "./cards";
-import { applyCommand, createInitialState } from "./engine";
+import { createInitialState } from "./state";
+import { applyCommand } from "./commands";
 import { createRng } from "./rng";
 import { COLORS } from "./types";
 import type {

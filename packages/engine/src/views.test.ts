@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { applyCommand } from "./engine";
-import { filterEventsForViewer, getPlayerView, getPublicView } from "./views";
+import { applyCommand } from "./commands";
+import { filterEventsForViewer, getPlayerView, getPublicView } from "./snapshots";
 import { cmd, find, handOf, run, setup, started } from "./test-helpers";
 import { playRandomGame } from "./fuzz-helpers";
 

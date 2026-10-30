@@ -151,6 +151,93 @@ export interface GameState {
   drawnCardId: string | null;
   seenCommandIds: CommandId[];
 }
+
+/**
+ * Fine-grained rejection reasons emitted by the rules engine in COMMAND_REJECTED.
+ * The wire layer wraps them: `error { code: "ERR_ILLEGAL_MOVE" | "ERR_NOT_YOUR_TURN" | ..., reason: EngineRejectReason }`.
+ * Mirrors `RejectReason` in packages/engine/src/types.ts (never a raw string).
+ */
+export type EngineRejectReason =
+  | "MALFORMED_COMMAND"
+  | "DUPLICATE_COMMAND"
+  | "UNKNOWN_PLAYER"
+  | "PLAYER_RESIGNED"
+  | "WRONG_PHASE"
+  | "HAND_NOT_STARTED"
+  | "HAND_IN_PROGRESS"
+  | "HAND_OVER"
+  | "MATCH_OVER"
+  | "NOT_YOUR_TURN"
+  | "CARD_NOT_IN_HAND"
+  | "CARD_NOT_PLAYABLE"
+  | "WILD_DRAW_FOUR_ILLEGAL"
+  | "COLOR_REQUIRED"
+  | "COLOR_INVALID"
+  | "ALREADY_DREW"
+  | "NOT_DRAWN_CARD"
+  | "NOTHING_TO_PASS"
+  | "CHALLENGE_PENDING"
+  | "COLOR_CHOICE_PENDING"
+  | "NO_CHALLENGE_PENDING"
+  | "NOT_CHALLENGE_TARGET"
+  | "NOT_AT_UNO"
+  | "ALREADY_CALLED_UNO"
+  | "NOTHING_TO_CATCH"
+  | "UNO_WINDOW_CLOSED"
+  | "CANNOT_CATCH_SELF"
+  | "ALREADY_VOTED"
+  // No Mercy
+  | "PLAYER_ELIMINATED"
+  | "STACK_TOO_LOW"
+  | "MUST_STACK_OR_DRAW"
+  | "CANNOT_DRAW_WITH_PLAYABLE"
+  | "MUST_PLAY_DRAWN_CARD"
+  | "SWAP_TARGET_PENDING"
+  | "NO_SWAP_PENDING"
+  | "INVALID_SWAP_TARGET";
+
+/** Who may ever see a field. `public` → PublicSnapshot, `private` → owner's PrivateSnapshot only, `internal` → never leaves the Room DO. */
+export type Visibility = "public" | "private" | "internal";
+
+export const GAME_STATE_VISIBILITY: Record<keyof GameState, Visibility> = {
+  matchId: "public",
+  roomCode: "public",
+  variant: "public",
+  seed: "internal", // revealed only after match_over (replays)
+  rngState: "internal",
+  phase: "public",
+  round: "public",
+  stateVersion: "public",
+  players: "public", // per-field rules below: PlayerState.hand is private
+  drawPile: "internal", // only its length is public
+  discardPile: "public", // top card public; full pile after match_over
+  setAside: "internal", // only the count is public
+  currentSeat: "public",
+  direction: "public",
+  activeColor: "public",
+  pendingStack: "public",
+  pendingChallenge: "public", // wasIllegal is internal until resolved
+  rouletteTargetSeat: "public",
+  unoWindow: "public",
+  turnDeadlineMs: "public",
+  drawnCardId: "private", // visible to the drawing player only
+  seenCommandIds: "internal",
+};
+
+export const PLAYER_STATE_VISIBILITY: Record<keyof PlayerState, Visibility> = {
+  id: "public",
+  seat: "public",
+  displayName: "public",
+  avatar: "public",
+  hand: "private", // public view carries handCount only
+  connected: "public",
+  isBot: "public",
+  eliminated: "public",
+  forfeited: "public",
+  unoCalled: "public",
+  consecutiveTimeouts: "internal",
+  score: "public",
+};
 ```
 
 ## 4. Commands (client → server)

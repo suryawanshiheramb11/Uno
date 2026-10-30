@@ -1,0 +1,11 @@
+# Copy to .dev.vars (git-ignored) for `npm run dev:worker`. Production/staging use `wrangler secret put`.
+BETTER_AUTH_SECRET=change-me-to-a-long-random-string-at-least-32-chars
+# Google OAuth client from Google Cloud Console (optional locally; the button is hidden without both).
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+# Email delivery for magic links. Without these, local dev prints the link to the console.
+RESEND_API_KEY=
+MAIL_FROM=UNO <login@your-domain.example>
+# Lets automated sign-in tests read magic links for addresses at E2E_EMAIL_DOMAIN. Never set on production.
+E2E_SECRET=
+E2E_EMAIL_DOMAIN=e2e.uno.example.com

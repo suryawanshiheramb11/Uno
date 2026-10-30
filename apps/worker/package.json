@@ -9,16 +9,22 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "deploy:staging": "wrangler deploy --env staging --var GIT_SHA:${GIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo dev)}",
-    "deploy:production": "wrangler deploy --env production --var GIT_SHA:${GIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo dev)}"
+    "deploy:production": "wrangler deploy --env production --var GIT_SHA:${GIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo dev)}",
+    "auth:schema:check": "node scripts/check-auth-schema.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:staging": "wrangler d1 migrations apply DB --env staging --remote",
+    "db:migrate:production": "wrangler d1 migrations apply DB --env production --remote"
   },
   "dependencies": {
     "@uno/bots": "*",
     "@uno/engine": "*",
-    "@uno/shared": "*"
+    "@uno/shared": "*",
+    "better-auth": "^1.7.14"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.11",
     "@cloudflare/workers-types": "^4.0.0",
-    "wrangler": "^4.0.0"
+    "wrangler": "^4.0.0",
+    "auth": "^1.7.14"
   }
 }

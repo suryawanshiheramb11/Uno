@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyCommand } from "./engine";
+import { applyCommand } from "./commands";
 import { playRandomGame } from "./fuzz-helpers";
 import { cmd, started } from "./test-helpers";
 

@@ -2,7 +2,8 @@ export * from "./types";
 export * from "./cards";
 export { createRng } from "./rng";
 export type { Rng } from "./rng";
-export { createInitialState, applyCommand } from "./engine";
+export { createInitialState } from "./state";
+export { applyCommand } from "./commands";
 export {
   getLegalMoves,
   canPlayCard,
@@ -12,4 +13,5 @@ export {
   stepSeat,
   isEliminated,
 } from "./rules";
-export { getPlayerView, getPublicView, filterEventsForViewer } from "./views";
+export { getPlayerView, getPublicView, filterEventsForViewer } from "./snapshots";
+export { createClassicDeck, createNoMercyDeck, createDeckIds, shuffle, deal } from "./deck";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getLegalMoves } from "./rules";
-import { filterEventsForViewer, getPlayerView, getPublicView } from "./views";
+import { filterEventsForViewer, getPlayerView, getPublicView } from "./snapshots";
 import {
   cmd,
   currentId,

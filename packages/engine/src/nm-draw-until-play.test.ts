@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterEventsForViewer } from "./views";
+import { filterEventsForViewer } from "./snapshots";
 import { getLegalMoves } from "./rules";
 import {
   cmd,

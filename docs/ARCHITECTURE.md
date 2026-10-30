@@ -2,22 +2,48 @@
 
 ## 1. Topology
 
+**Everything is served from Cloudflare.** Static assets, the API, WebSockets and storage all run on the Cloudflare network (Workers + Static Assets + Durable Objects + D1). There is no separate CDN and no origin server.
+
 ```
-┌──────────────┐  HTTPS  ┌───────────────────────────────┐
-│   Browser    │────────►│  Cloudflare edge              │
-│ React + Vite │         │  ├─ Static Assets (SPA, cards)│
-│  PWA shell   │◄────────│  └─ Worker  (router / auth)   │
-└──────┬───────┘         └──────┬───────────────┬────────┘
-       │ WSS                    │ stub.fetch()  │ SQL
-       │ /ws/room/ABC123        ▼               ▼
-       └──────────────► ┌───────────────┐   ┌───────────┐
-                        │ Durable Object│   │    D1     │
-                        │  RoomDO       │──►│ accounts, │
-                        │ (1 per room)  │   │ matches,  │
-                        │ engine + WS   │   │ ratings   │
-                        └───────────────┘   └───────────┘
-                           storage: DO SQLite (snapshot + command log)
+┌──────────────┐  HTTPS  ┌──────────────────────────────────────┐
+│   Browser    │────────►│  Cloudflare edge                     │
+│ React + Vite │         │  ├─ Static Assets  (binding ASSETS)  │
+│  PWA shell   │◄────────│  └─ Worker  (router / auth / API)    │
+└──────┬───────┘         └───┬──────────┬──────────┬────────┬───┘
+       │ WSS                 │          │          │        │ SQL
+       │ /ws/room/ABC123     ▼          ▼          ▼        ▼
+       └──────────────► ┌─────────┐ ┌───────────┐ ┌──────────┐ ┌────────┐
+                        │ Room DO │ │Matchmaker │ │Presence  │ │   D1   │
+                        │ (ROOM)  │ │DO         │ │DO        │ │ (DB)   │
+                        │ 1/room  │ │(MATCHMAKER│ │(PRESENCE)│ │accounts│
+                        │ engine+ │ │ queues,   │ │ friends  │ │matches │
+                        │ sockets │ │ ranked)   │ │ online)  │ │ratings │
+                        └────┬────┘ └─────┬─────┘ └──────────┘ └────────┘
+                             │ creates room│                        ▲
+                             └─────────────┘   match end write ──────┘
+                        storage: each DO's own SQLite (snapshot + command log)
 ```
+
+Browser ↔ Worker ↔ Room DO ↔ D1, with the Matchmaker DO (pairs players, allocates room codes) and the Presence DO (online status, friends, invites) beside them.
+
+### 1.1 Worker bindings
+
+| Binding | Type | Purpose |
+|---|---|---|
+| `ASSETS` | Static Assets | SPA, card SVGs, textures; SPA fallback |
+| `ROOM` | Durable Object namespace (`Room`) | One authoritative game room |
+| `MATCHMAKER` | Durable Object namespace (`Matchmaker`) | Quick / ranked queues |
+| `PRESENCE` | Durable Object namespace (`Presence`) | Presence, friends, invites |
+| `DB` | D1 database | Accounts, match history, ratings |
+
+Plain vars: `ENVIRONMENT`, `APP_URL`, `PROTOCOL_VERSION`, `GIT_SHA`.
+
+### 1.2 Durable Object hibernation and SQLite persistence
+
+- Room DOs use the **WebSocket Hibernation API** (`ctx.acceptWebSocket`, `webSocketMessage`, `webSocketClose`). An idle room with open sockets is evicted from memory and its connections stay open at the edge; the next message re-instantiates the DO, which then rebuilds state from storage. Idle rooms cost nothing.
+- Because a DO can be evicted at any time, no state lives only in memory: after every accepted command the DO writes the new `GameState` snapshot and appends the command to its log in **DO SQLite storage** (classes are declared with `new_sqlite_classes` in the migration). Per-socket data lives in `serializeAttachment`.
+- Timers (turn deadline, UNO window, reconnect grace) use **DO alarms**, not `setTimeout`, so they survive hibernation.
+- D1 is written only when a match ends (`MatchSummary` + command log), keeping it off the hot path.
 
 ## 2. What runs where
 
@@ -34,17 +60,29 @@
 
 Hidden-information rule: the DO builds `PublicSnapshot` and a per-seat `PrivateSnapshot`; nothing else ever leaves the DO. Spectators receive the public snapshot only.
 
-## 3. Repository layout (created in Phase 1)
+## 3. Repository layout (Phase 1, as built)
 
 ```
-apps/web         React + Vite client
-apps/worker      Worker entry + RoomDO
-packages/shared    types/constants (DATA_CONTRACT.md types land here)
-packages/engine  pure rules engine (no I/O)
-decks/           classic.json, no-mercy.json
-scripts/         export-assets, bundle-size, check-contract
+apps/web         React 19 + Vite + Tailwind 4 + React Router client
+apps/worker      Worker entry (/api/*), Room / Matchmaker / Presence DO classes
+packages/shared  protocol constants + shared types
+packages/engine  pure rules engine (no I/O): deck, state, commands, effects, snapshots
+packages/bots    bot strategies (depends on engine + shared only)
+scripts/         export-assets, check-contract
+tools/figma-cards  vendored card generator
 docs/
 ```
+
+### Tooling actually used
+
+| Tool | Version / syntax |
+|---|---|
+| Wrangler | 4.x, `wrangler.jsonc` (JSONC), `compatibility_date` `2026-10-01`, flag `nodejs_compat` |
+| Assets | `"assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*"] }` |
+| DOs | `"durable_objects": { "bindings": [...] }` + `"migrations": [{ "tag": "v1", "new_sqlite_classes": [...] }]` |
+| Environments | top level = local; `env.staging`, `env.production` repeat every binding (Wrangler does not inherit them) |
+| Deploy | `npm run deploy:staging` → `wrangler deploy --env staging --var GIT_SHA:<sha>` |
+| Node / TS / Vitest | Node ≥ 20 (`.nvmrc`), TypeScript 5.9, Vitest 4 |
 
 ## 4. Request flows
 

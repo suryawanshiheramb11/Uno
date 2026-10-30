@@ -19,3 +19,7 @@ Classic + No Mercy, hosted on Cloudflare (Worker + Durable Objects + D1 + Static
 5. Push to `main`; `.github/workflows/deploy-staging.yml` runs lint, typecheck, test, build, deploy, then curls `/api/health`.
 
 Notes: `.npmrc` sets `legacy-peer-deps` (npm 10 crashes resolving vitest's optional peers). Worker tests use `@cloudflare/vitest-plugin`, the renamed successor of the deprecated `@cloudflare/vitest-pool-workers`.
+
+## Accounts
+
+Sign-in (Google + email magic link), profiles and D1 are documented in [docs/AUTH.md](docs/AUTH.md), including the one-time staging setup (Google OAuth client, secrets, email provider).

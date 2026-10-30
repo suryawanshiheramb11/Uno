@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyCommand } from "./engine";
+import { applyCommand } from "./commands";
 import type { Command, RejectReason } from "./types";
 import { cmd, expectRejected, find, run, setup, types } from "./test-helpers";
 

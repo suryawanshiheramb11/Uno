@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPublicView } from "./views";
+import { getPublicView } from "./snapshots";
 import { getLegalMoves } from "./rules";
 import { cmd, currentId, expectRejected, find, handOf, run, setup, types } from "./test-helpers";
 

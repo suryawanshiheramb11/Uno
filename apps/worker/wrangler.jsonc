@@ -22,7 +22,12 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room", "Matchmaker", "Presence"] }],
   "d1_databases": [
-    { "binding": "DB", "database_name": "uno-local", "database_id": "local-placeholder" },
+    {
+      "binding": "DB",
+      "migrations_dir": "migrations",
+      "database_name": "uno-local",
+      "database_id": "local-placeholder",
+    },
   ],
   "vars": {
     "ENVIRONMENT": "local",
@@ -53,6 +58,7 @@
       "d1_databases": [
         {
           "binding": "DB",
+          "migrations_dir": "migrations",
           "database_name": "uno-staging",
           "database_id": "REPLACE_WITH_STAGING_D1_ID",
         },
@@ -82,7 +88,12 @@
       },
       "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room", "Matchmaker", "Presence"] }],
       "d1_databases": [
-        { "binding": "DB", "database_name": "uno-prod", "database_id": "REPLACE_WITH_PROD_D1_ID" },
+        {
+          "binding": "DB",
+          "migrations_dir": "migrations",
+          "database_name": "uno-prod",
+          "database_id": "REPLACE_WITH_PROD_D1_ID",
+        },
       ],
       "vars": {
         "ENVIRONMENT": "production",

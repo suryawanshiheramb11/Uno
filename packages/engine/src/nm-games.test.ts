@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { applyCommand } from "./engine";
+import { applyCommand } from "./commands";
 import { playRandomGame } from "./fuzz-helpers";
-import { getPlayerView, getPublicView } from "./views";
+import { getPlayerView, getPublicView } from "./snapshots";
 import { getLegalMoves } from "./rules";
 import { setup, junk } from "./test-helpers";
 import type { EngineEvent, GameState } from "./types";

@@ -17,7 +17,7 @@ function renderAt(path: string) {
 }
 
 describe("Landing page", () => {
-  it("renders title, tagline and a disabled sign-in button", () => {
+  it("renders title, tagline and a sign-in link to /sign-in", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(() => new Promise(() => {})),
@@ -25,9 +25,7 @@ describe("Landing page", () => {
     renderAt("/");
     expect(screen.getByRole("heading", { name: "UNO" })).toBeTruthy();
     expect(screen.getByText(/Classic and No Mercy/)).toBeTruthy();
-    expect((screen.getByRole("button", { name: "Sign in" }) as HTMLButtonElement).disabled).toBe(
-      true,
-    );
+    expect(screen.getByRole("link", { name: "Sign in" }).getAttribute("href")).toBe("/sign-in");
   });
 
   it("shows the environment from /api/health", async () => {

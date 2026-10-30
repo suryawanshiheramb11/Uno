@@ -16,7 +16,8 @@ import {
 } from "./cards";
 import { COLORS } from "./types";
 import { cmd, expectConserved, find, findSeed, started, types } from "./test-helpers";
-import { createInitialState } from "./engine";
+import { createInitialState } from "./state";
+import {} from "./commands";
 import { createRng } from "./rng";
 import { EngineError } from "./types";
 

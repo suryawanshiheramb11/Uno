@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cardDefOf } from "./cards";
-import { applyCommand as run } from "./engine";
+import { applyCommand as run } from "./commands";
 import { getLegalMoves } from "./rules";
 import { COLORS } from "./types";
 import type { GameState } from "./types";

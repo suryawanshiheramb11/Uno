@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CLASSIC_DEFS, cardLabel, cardOf, cardPoints, makeCardId } from "./cards";
-import { applyCommand, createInitialState } from "./engine";
+import { createInitialState } from "./state";
+import { applyCommand } from "./commands";
 import { createRng } from "./rng";
 import { COLORS, DEFAULT_CLASSIC_CONFIG, EngineError } from "./types";
 import {

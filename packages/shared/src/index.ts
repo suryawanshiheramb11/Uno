@@ -5,6 +5,10 @@ export type Environment = "local" | "staging" | "production";
 
 export const ERROR_CODES = [
   "ERR_PROTOCOL_UNSUPPORTED",
+  "ERR_UNAUTHORIZED",
+  "ERR_FORBIDDEN",
+  "ERR_VALIDATION",
+  "ERR_CONFLICT",
   "ERR_NOT_FOUND",
   "ERR_RATE_LIMITED",
   "ERR_INTERNAL",
@@ -32,3 +36,5 @@ export const STRINGS = {
     statusOffline: "Offline",
   },
 } as const;
+
+export * from "./profile";

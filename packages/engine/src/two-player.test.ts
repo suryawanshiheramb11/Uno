@@ -77,4 +77,22 @@ describe("two-player special rules", () => {
     expect(handOf(res.state, "a")).toHaveLength(6);
     expect(currentId(res.state)).toBe("b");
   });
+  it("Skip leaves the opponent's hand unchanged and unmoved", () => {
+    const g = duel(["red-skip", "red-1", "red-2"]);
+    const { state } = run(g.state, cmd("PLAY_CARD", "a", { cardId: g.id("red-skip") }));
+    expect(handOf(state, "b")).toHaveLength(3);
+    expect(state.direction).toBe(1);
+  });
+  it("a Skip as the last card wins the hand instead of skipping", () => {
+    const g = duel(["red-skip"]);
+    const { state, events } = run(g.state, cmd("PLAY_CARD", "a", { cardId: g.id("red-skip") }));
+    expect(types(events)).toContain("HAND_WON");
+    expect(state.handWinnerId).toBe("a");
+  });
+  it("a Reverse as the last card wins the hand", () => {
+    const g = duel(["red-reverse"]);
+    const { state, events } = run(g.state, cmd("PLAY_CARD", "a", { cardId: g.id("red-reverse") }));
+    expect(find(events, "HAND_WON").winnerId).toBe("a");
+    expect(state.handWinnerId).toBe("a");
+  });
 });

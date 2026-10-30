@@ -1,7 +1,8 @@
 import type { Variant } from "@uno/shared";
 import { expect } from "vitest";
 import { cardDefOf } from "./cards";
-import { applyCommand, createInitialState } from "./engine";
+import { createInitialState } from "./state";
+import { applyCommand } from "./commands";
 import { createRng } from "./rng";
 import { canPlayCard, getLegalMoves, isInHand, needsColorChoice } from "./rules";
 import { cmd, expectConserved } from "./test-helpers";
