@@ -1,0 +1,24 @@
+{
+  "name": "@uno/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --env staging --outdir .wrangler/dry-run",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy:staging": "wrangler deploy --env staging --var GIT_SHA:${GIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo dev)}",
+    "deploy:production": "wrangler deploy --env production --var GIT_SHA:${GIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo dev)}"
+  },
+  "dependencies": {
+    "@uno/bots": "*",
+    "@uno/engine": "*",
+    "@uno/shared": "*"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.11",
+    "@cloudflare/workers-types": "^4.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

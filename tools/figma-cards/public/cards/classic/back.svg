@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="57mm" height="89mm" viewBox="0 0 570 890" role="img" aria-labelledby="title">
+<title id="title">Classic UNO card back</title>
+<defs>
+<clipPath id="card-clip"><rect width="570" height="890" rx="35"/></clipPath>
+<clipPath id="face-clip"><rect x="35" y="36" width="500" height="818" rx="36"/></clipPath>
+<linearGradient id="face" x1="0" y1="0" x2="1" y2=".7">
+<stop stop-color="#ef222a"/><stop offset=".55" stop-color="#ef222a"/><stop offset="1" stop-color="#c40f19"/>
+</linearGradient>
+</defs><rect width="570" height="890" rx="35" fill="#fff"/><rect x="35" y="36" width="500" height="818" rx="36" fill="#141315"/><g clip-path="url(#face-clip)"><ellipse cx="285" cy="445" rx="223" ry="370" transform="rotate(31 285 445)" fill="#e32228"/></g><g transform="rotate(-22 285 445)"><g transform="translate(93 362) scale(1.4889705882352942 1.4423076923076923) skewX(-9)" fill-rule="evenodd" stroke-linejoin="round">
+<g transform="translate(-3 6)" fill="#171416" stroke="#171416" stroke-width="12"><g transform="translate(0 0)"><path d="M0 0H26V64Q26 82 42 82Q58 82 58 64V0H84V65Q84 104 42 104Q0 104 0 65Z" /></g><g transform="translate(91 0)"><path d="M0 100V0H27L61 58V0H85V100H58L24 42V100Z" /></g><g transform="translate(182 0)"><path d="M45 0C15 0 0 19 0 52S15 104 45 104S90 85 90 52S75 0 45 0ZM45 23C59 23 64 34 64 52S59 81 45 81S26 70 26 52S31 23 45 23Z" /></g></g>
+<g fill="#ffe327" stroke="#fff" stroke-width="8" paint-order="stroke fill"><g transform="translate(0 0)"><path d="M0 0H26V64Q26 82 42 82Q58 82 58 64V0H84V65Q84 104 42 104Q0 104 0 65Z" /></g><g transform="translate(91 0)"><path d="M0 100V0H27L61 58V0H85V100H58L24 42V100Z" /></g><g transform="translate(182 0)"><path d="M45 0C15 0 0 19 0 52S15 104 45 104S90 85 90 52S75 0 45 0ZM45 23C59 23 64 34 64 52S59 81 45 81S26 70 26 52S31 23 45 23Z" /></g></g>
+<g fill="none" stroke="#171416" stroke-width="1.8"><g transform="translate(0 0)"><path d="M0 0H26V64Q26 82 42 82Q58 82 58 64V0H84V65Q84 104 42 104Q0 104 0 65Z" /></g><g transform="translate(91 0)"><path d="M0 100V0H27L61 58V0H85V100H58L24 42V100Z" /></g><g transform="translate(182 0)"><path d="M45 0C15 0 0 19 0 52S15 104 45 104S90 85 90 52S75 0 45 0ZM45 23C59 23 64 34 64 52S59 81 45 81S26 70 26 52S31 23 45 23Z" /></g></g>
+</g></g>
+</svg>

@@ -1,0 +1,6 @@
+{
+  "red": { "mercy": "#ed292e", "shade": "#c61e27", "classic": "#ed1c24" },
+  "yellow": { "mercy": "#f9d52c", "shade": "#efbd1b", "classic": "#f8ca10" },
+  "green": { "mercy": "#508a36", "shade": "#34692b", "classic": "#079c4b" },
+  "blue": { "mercy": "#277bc1", "shade": "#1a59a4", "classic": "#0879c8" }
+}

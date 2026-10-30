@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="57mm" height="89mm" viewBox="0 0 570 890" role="img" aria-labelledby="title">
+<title id="title">Classic UNO red 4</title>
+<defs>
+<clipPath id="card-clip"><rect width="570" height="890" rx="35"/></clipPath>
+<clipPath id="face-clip"><rect x="35" y="36" width="500" height="818" rx="36"/></clipPath>
+<linearGradient id="face" x1="0" y1="0" x2="1" y2=".7">
+<stop stop-color="#ed292e"/><stop offset=".55" stop-color="#ed292e"/><stop offset="1" stop-color="#c61e27"/>
+</linearGradient>
+</defs><rect width="570" height="890" rx="35" fill="#fff"/><rect x="35" y="36" width="500" height="818" rx="36" fill="#ed1c24"/><g clip-path="url(#face-clip)"><ellipse cx="285" cy="445" rx="224" ry="430" transform="rotate(31 285 445)" fill="#fff" stroke="none" stroke-width="13"/></g><g transform="translate(-6 6)"><g transform="translate(178 296) scale(1.07 1)"><path d="M111 0H174V181H200V235H174V300H112V235H0V178ZM112 76L49 181H112Z" fill="#222024" stroke="#222024" stroke-width="5" fill-rule="evenodd" stroke-linejoin="round"/></g></g><g transform="translate(178 296) scale(1.07 1)"><path d="M111 0H174V181H200V235H174V300H112V235H0V178ZM112 76L49 181H112Z" fill="#ed1c24" fill-rule="evenodd" stroke="#222024" stroke-width="5" stroke-linejoin="round" paint-order="stroke fill"/></g><g><g transform="translate(66 67) scale(0.455 0.43333333333333335)"><path d="M111 0H174V181H200V235H174V300H112V235H0V178ZM112 76L49 181H112Z" fill="#fff" fill-rule="evenodd" stroke="#111" stroke-width="4" stroke-linejoin="round" paint-order="stroke fill"/></g></g><g transform="rotate(180 285 445)"><g transform="translate(66 67) scale(0.455 0.43333333333333335)"><path d="M111 0H174V181H200V235H174V300H112V235H0V178ZM112 76L49 181H112Z" fill="#fff" fill-rule="evenodd" stroke="#111" stroke-width="4" stroke-linejoin="round" paint-order="stroke fill"/></g></g>
+</svg>

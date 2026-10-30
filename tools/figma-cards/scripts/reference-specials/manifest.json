@@ -1,0 +1,128 @@
+{
+  "classic/yellow-reverse": {
+    "file": "classic-yellow-reverse.png",
+    "width": 744,
+    "height": 1169,
+    "restored": false,
+    "pngSha256": "2c3e79154bacb0d97320af60d20559f007815d2fbadd22eea1ce3a88ea1e462b"
+  },
+  "classic/red-reverse": {
+    "file": "classic-red-reverse.png",
+    "width": 744,
+    "height": 1169,
+    "restored": false,
+    "pngSha256": "cbbeece8e2d9835a14f2f65be7a43eb5d6744e4b2fa7af4f19fb02525023fb27"
+  },
+  "classic/green-reverse": {
+    "file": "classic-green-reverse.png",
+    "width": 744,
+    "height": 1169,
+    "restored": false,
+    "pngSha256": "b0a4c70329b078fd297127d8e114e8349aeceadab4282191b05a078a6aeec2fe"
+  },
+  "classic/blue-reverse": {
+    "file": "classic-blue-reverse.png",
+    "width": 744,
+    "height": 1169,
+    "restored": false,
+    "pngSha256": "4afcccef6690cb9d8f5ad99f57e6024c0bc6076dc0b7c9f1ba10e8c0ad8311ef"
+  },
+  "classic/yellow-draw-two": {
+    "file": "classic-yellow-draw-two.png",
+    "width": 814,
+    "height": 1259,
+    "restored": false,
+    "pngSha256": "3694276b967db01b8c2c0c2303544400b9e9386fe3fe649a3de86975cde8a374"
+  },
+  "classic/red-draw-two": {
+    "file": "classic-red-draw-two.png",
+    "width": 814,
+    "height": 1259,
+    "restored": false,
+    "pngSha256": "b00f7bd8dd1a8456c285340597261c0345b92cf4dc3b0bd43217f2edd9594f7e"
+  },
+  "classic/green-draw-two": {
+    "file": "classic-green-draw-two.png",
+    "width": 814,
+    "height": 1259,
+    "restored": false,
+    "pngSha256": "2af36ce76feee5ff7ad3a85fd5edc61e2cfce799f8439c868b0e1cac74cf77b8"
+  },
+  "classic/blue-draw-two": {
+    "file": "classic-blue-draw-two.png",
+    "width": 814,
+    "height": 1259,
+    "restored": false,
+    "pngSha256": "e9a022d1a46613ada823f72cbaf5f3a931dd94e52669b186c5e8ba48ba3b885b"
+  },
+  "classic/yellow-skip": {
+    "file": "classic-yellow-skip.png",
+    "width": 722,
+    "height": 1027,
+    "restored": false,
+    "pngSha256": "55e4cab02b36ca86225e57241af6f6f0f827fa0524947b32b4ee2ea100d7ebb9"
+  },
+  "classic/red-skip": {
+    "file": "classic-red-skip.png",
+    "width": 722,
+    "height": 1027,
+    "restored": false,
+    "pngSha256": "3c367aad1a4c4e47711ce49ab0356a1d172051e49d6972515a23e69ba3241937"
+  },
+  "classic/green-skip": {
+    "file": "classic-green-skip.png",
+    "width": 722,
+    "height": 1027,
+    "restored": false,
+    "pngSha256": "0bb311912a648e523a821a78e8e1ffa05a0be1c9ea0fde4585672f9aa836e496"
+  },
+  "classic/blue-skip": {
+    "file": "classic-blue-skip.png",
+    "width": 722,
+    "height": 1027,
+    "restored": false,
+    "pngSha256": "e41d7754a8908703f8731a9ec949eece8667467fe3717742e3185588168cf63c"
+  },
+  "classic/wild-draw-four": {
+    "file": "classic-wild-draw-four.png",
+    "width": 581,
+    "height": 906,
+    "restored": false,
+    "pngSha256": "0b726674be7cd809a4c296dda26784a0ce6dfaa57b727c5acc65cd3295562ebf"
+  },
+  "classic/wild": {
+    "file": "classic-wild.png",
+    "width": 607,
+    "height": 948,
+    "restored": false,
+    "pngSha256": "b787e9653783f42d26a9c32aca720c4d7fe38fcc463c9de1bea0e0fda1695ea1"
+  },
+  "no-mercy/wild-reverse-draw-four": {
+    "file": "no-mercy-wild-reverse-draw-four.png",
+    "width": 592,
+    "height": 922,
+    "restored": true,
+    "pngSha256": "577a63c643e32d85b668a88eb0bcd49ee65c35a0d053cc30970c0298daba543e"
+  },
+  "no-mercy/wild-draw-six": {
+    "file": "no-mercy-wild-draw-six.png",
+    "width": 600,
+    "height": 926,
+    "restored": true,
+    "pngSha256": "9dfccae9262553d1b01f7c7a3cedd839bd122891321de07f8ba7c961792ebe51"
+  },
+  "no-mercy/wild-draw-ten": {
+    "file": "no-mercy-wild-draw-ten.png",
+    "width": 592,
+    "height": 918,
+    "restored": true,
+    "pngSha256": "3343b825565e9d1d2cfbfb095e6904da97c069a2a361190a1fa703816c1a68dc"
+  },
+  "no-mercy/wild-color-roulette": {
+    "file": "no-mercy-wild-color-roulette.png",
+    "width": 604,
+    "height": 920,
+    "restored": true,
+    "pngSha256": "ec2db0e2cbb389bf787f145b4586d6cf690ce2cc0a120bdf4ce9b114d10cd7ca"
+  }
+}

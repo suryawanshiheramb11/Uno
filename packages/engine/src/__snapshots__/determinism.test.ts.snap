@@ -1,0 +1,761 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`determinism > matches a stored JSON snapshot of the event log (seed 42, 40 commands) 1`] = `
+"[
+ {
+  "type": "HAND_STARTED",
+  "handNumber": 1,
+  "handSeed": 3562241369,
+  "dealerId": "p3",
+  "firstPlayerId": "p0"
+ },
+ {
+  "type": "OPENING_CARD",
+  "cardId": "1mwv715-57"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": 1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-8",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": 1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-105",
+  "chosenColor": "green"
+ },
+ {
+  "type": "COLOR_CHOSEN",
+  "playerId": "p1",
+  "color": "green"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": 1
+ },
+ {
+  "type": "CHALLENGE_RESOLVED",
+  "challengerId": "p2",
+  "accusedId": "p1",
+  "success": false
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p2",
+  "count": 6,
+  "cardIds": [
+   "1mwv715-56",
+   "1mwv715-106",
+   "1mwv715-28",
+   "1mwv715-37",
+   "1mwv715-29",
+   "1mwv715-71"
+  ],
+  "reason": "challenge_failed"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": 1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p3",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-92"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": 1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-101",
+  "chosenColor": "blue"
+ },
+ {
+  "type": "COLOR_CHOSEN",
+  "playerId": "p0",
+  "color": "blue"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": 1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-100",
+  "chosenColor": "green"
+ },
+ {
+  "type": "COLOR_CHOSEN",
+  "playerId": "p1",
+  "color": "green"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": 1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-71",
+  "chosenColor": null
+ },
+ {
+  "type": "DIRECTION_REVERSED",
+  "direction": -1
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p1",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-41"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-51",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-76",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p2",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-61"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-26",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-40",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-34",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-28",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-78",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-82",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-89",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-94",
+  "chosenColor": null
+ },
+ {
+  "type": "PLAYER_SKIPPED",
+  "playerId": "p1",
+  "reason": "skip"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-79",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-85",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-98",
+  "chosenColor": null
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p1",
+  "count": 2,
+  "cardIds": [
+   "1mwv715-68",
+   "1mwv715-15"
+  ],
+  "reason": "draw_two"
+ },
+ {
+  "type": "PLAYER_SKIPPED",
+  "playerId": "p1",
+  "reason": "draw_two"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "UNO_CALLED",
+  "playerId": "p0"
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p0",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-74"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p0",
+  "cardId": "1mwv715-74",
+  "chosenColor": null
+ },
+ {
+  "type": "UNO_CALLED",
+  "playerId": "p0"
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p3",
+  "count": 2,
+  "cardIds": [
+   "1mwv715-20",
+   "1mwv715-52"
+  ],
+  "reason": "draw_two"
+ },
+ {
+  "type": "PLAYER_SKIPPED",
+  "playerId": "p3",
+  "reason": "draw_two"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-63",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-64",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p0",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-7"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-52",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-61",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-68",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p0",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-21"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-92",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p2",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-47"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p1",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-38"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ },
+ {
+  "type": "CARDS_DRAWN",
+  "playerId": "p0",
+  "count": 1,
+  "cardIds": [
+   "1mwv715-70"
+  ],
+  "reason": "voluntary"
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p3",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p3",
+  "cardId": "1mwv715-43",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p2",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p2",
+  "cardId": "1mwv715-37",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p1",
+  "direction": -1
+ },
+ {
+  "type": "CARD_PLAYED",
+  "playerId": "p1",
+  "cardId": "1mwv715-25",
+  "chosenColor": null
+ },
+ {
+  "type": "TURN_CHANGED",
+  "playerId": "p0",
+  "direction": -1
+ }
+]"
+`;
+
+exports[`determinism > matches a stored JSON snapshot of the state after 40 commands (seed 42) 1`] = `
+"{
+ "variant": "classic",
+ "config": {
+  "initialHandSize": 7,
+  "unoWindowMs": 3000,
+  "unoPenalty": 2,
+  "strictWildDrawFour": true,
+  "targetScore": null
+ },
+ "phase": "awaiting_play_or_draw",
+ "handNumber": 1,
+ "handSeed": 3562241369,
+ "rngState": [
+  2457234984,
+  4204386875,
+  4030773432,
+  3935473387
+ ],
+ "players": [
+  {
+   "id": "p0",
+   "hand": [
+    "1mwv715-10",
+    "1mwv715-7",
+    "1mwv715-21",
+    "1mwv715-70"
+   ],
+   "score": 0,
+   "resigned": false,
+   "unoCalled": false
+  },
+  {
+   "id": "p1",
+   "hand": [
+    "1mwv715-59",
+    "1mwv715-41",
+    "1mwv715-15",
+    "1mwv715-38"
+   ],
+   "score": 0,
+   "resigned": false,
+   "unoCalled": false
+  },
+  {
+   "id": "p2",
+   "hand": [
+    "1mwv715-91",
+    "1mwv715-14",
+    "1mwv715-6",
+    "1mwv715-9",
+    "1mwv715-56",
+    "1mwv715-106",
+    "1mwv715-29",
+    "1mwv715-47"
+   ],
+   "score": 0,
+   "resigned": false,
+   "unoCalled": false
+  },
+  {
+   "id": "p3",
+   "hand": [
+    "1mwv715-22",
+    "1mwv715-4",
+    "1mwv715-20"
+   ],
+   "score": 0,
+   "resigned": false,
+   "unoCalled": false
+  }
+ ],
+ "dealerSeat": 3,
+ "currentSeat": 0,
+ "direction": -1,
+ "activeColor": "yellow",
+ "drawPile": [
+  "1mwv715-19",
+  "1mwv715-54",
+  "1mwv715-99",
+  "1mwv715-50",
+  "1mwv715-104",
+  "1mwv715-60",
+  "1mwv715-27",
+  "1mwv715-67",
+  "1mwv715-30",
+  "1mwv715-69",
+  "1mwv715-84",
+  "1mwv715-16",
+  "1mwv715-49",
+  "1mwv715-5",
+  "1mwv715-66",
+  "1mwv715-45",
+  "1mwv715-18",
+  "1mwv715-93",
+  "1mwv715-3",
+  "1mwv715-1",
+  "1mwv715-36",
+  "1mwv715-24",
+  "1mwv715-97",
+  "1mwv715-72",
+  "1mwv715-62",
+  "1mwv715-83",
+  "1mwv715-53",
+  "1mwv715-90",
+  "1mwv715-48",
+  "1mwv715-2",
+  "1mwv715-95",
+  "1mwv715-58",
+  "1mwv715-44",
+  "1mwv715-0",
+  "1mwv715-11",
+  "1mwv715-88",
+  "1mwv715-86",
+  "1mwv715-103",
+  "1mwv715-77",
+  "1mwv715-32",
+  "1mwv715-80",
+  "1mwv715-96",
+  "1mwv715-65",
+  "1mwv715-73",
+  "1mwv715-75",
+  "1mwv715-107",
+  "1mwv715-81",
+  "1mwv715-39",
+  "1mwv715-23",
+  "1mwv715-13",
+  "1mwv715-31",
+  "1mwv715-12",
+  "1mwv715-55",
+  "1mwv715-42",
+  "1mwv715-87",
+  "1mwv715-46",
+  "1mwv715-17",
+  "1mwv715-102",
+  "1mwv715-35",
+  "1mwv715-33"
+ ],
+ "discardPile": [
+  "1mwv715-57",
+  "1mwv715-8",
+  "1mwv715-105",
+  "1mwv715-101",
+  "1mwv715-100",
+  "1mwv715-71",
+  "1mwv715-51",
+  "1mwv715-76",
+  "1mwv715-26",
+  "1mwv715-40",
+  "1mwv715-34",
+  "1mwv715-28",
+  "1mwv715-78",
+  "1mwv715-82",
+  "1mwv715-89",
+  "1mwv715-94",
+  "1mwv715-79",
+  "1mwv715-85",
+  "1mwv715-98",
+  "1mwv715-74",
+  "1mwv715-63",
+  "1mwv715-64",
+  "1mwv715-52",
+  "1mwv715-61",
+  "1mwv715-68",
+  "1mwv715-92",
+  "1mwv715-43",
+  "1mwv715-37",
+  "1mwv715-25"
+ ],
+ "drawnCardId": null,
+ "pendingChallenge": null,
+ "unoWindow": null,
+ "rematchVotes": [],
+ "seenCommandIds": [
+  "s42-0",
+  "s42-1",
+  "s42-2",
+  "s42-3",
+  "s42-4",
+  "s42-5",
+  "s42-6",
+  "s42-7",
+  "s42-8",
+  "s42-9",
+  "s42-10",
+  "s42-11",
+  "s42-12",
+  "s42-13",
+  "s42-14",
+  "s42-15",
+  "s42-16",
+  "s42-17",
+  "s42-18",
+  "s42-19",
+  "s42-20",
+  "s42-21",
+  "s42-22",
+  "s42-23",
+  "s42-24",
+  "s42-25",
+  "s42-26",
+  "s42-27",
+  "s42-28",
+  "s42-29",
+  "s42-30",
+  "s42-31",
+  "s42-32",
+  "s42-33",
+  "s42-34",
+  "s42-35",
+  "s42-36",
+  "s42-37",
+  "s42-38",
+  "s42-39"
+ ],
+ "handWinnerId": null,
+ "matchWinnerId": null,
+ "handResults": [],
+ "summary": null,
+ "version": 40
+}"
+`;

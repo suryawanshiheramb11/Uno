@@ -1,0 +1,24 @@
+{
+  "classic": {
+    "colored": ["skip", "reverse", "draw-two"],
+    "wild": ["wild", "wild-draw-four"]
+  },
+  "no-mercy": {
+    "colored": ["skip", "reverse", "draw-two", "draw-four", "discard-all", "skip-everyone"],
+    "wild": ["wild-reverse-draw-four", "wild-draw-six", "wild-draw-ten", "wild-color-roulette"]
+  },
+  "labels": {
+    "skip": "Skip",
+    "reverse": "Reverse",
+    "draw-two": "Draw Two (+2)",
+    "draw-four": "Draw Four (+4)",
+    "discard-all": "Discard All",
+    "skip-everyone": "Skip Everyone",
+    "wild": "Wild",
+    "wild-draw-four": "Wild Draw Four (+4)",
+    "wild-reverse-draw-four": "Wild Reverse Draw Four (+4)",
+    "wild-draw-six": "Wild Draw Six (+6)",
+    "wild-draw-ten": "Wild Draw Ten (+10)",
+    "wild-color-roulette": "Wild Color Roulette"
+  }
+}
