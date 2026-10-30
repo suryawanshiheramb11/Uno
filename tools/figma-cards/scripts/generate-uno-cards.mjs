@@ -1,6 +1,6 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
-import { diagonalReverse } from "./uno-special-art.mjs"
+import { cleanMercyWildArtwork, diagonalReverse } from "./uno-special-art.mjs"
 import { sourcePixelArtwork } from "./uno-source-pixels.mjs"
 
 const root = new URL("../public/cards/", import.meta.url)
@@ -395,6 +395,12 @@ function drawIndex(count, reverse = false) {
 function specialFront(edition, color, action) {
   const mercy = edition === "no-mercy"
   const wild = !color
+  if (mercy && wild) {
+    return wrap(
+      `UNO No Mercy ${actions.labels[action]}`,
+      cleanMercyWildArtwork(action, { drawIndex }),
+    )
+  }
   if (!mercy || wild) {
     return wrap(
       `${mercy ? "UNO No Mercy" : "Classic UNO"} ${

@@ -83,24 +83,24 @@ Playable = matches active colour, number, or symbol; wilds always playable **exc
 | N05 | Wild Reverse Draw Four semantics | Direction flips on play. Contributes **4** to the stack and counts as value 4 for N01. Stack passes in the *new* direction. **Two players:** reverse = skip, so the target is the **player themself**; they may immediately stack `+4/WRD4/+6/WD6/+10/WD10` from hand to send it to the opponent, otherwise draw the stack and lose their turn (opponent then plays). |
 | N06 | Colour after a stacked wild | The wild's player-chosen colour is the active colour; a coloured draw card sets its own colour. |
 | N07 | Wild Color Roulette: counting and mercy | Every revealed card (including the matching one) is added to the hand. Mercy is checked **after** the whole reveal completes (N12), so a long reveal can eliminate the target. Colour choice is by the *target*; active colour becomes their choice and stays. |
-| N08 | Draw Until You Can Play | Player with no playable card draws until a playable one appears. That card **must** be played (player supplies target/colour parameters, 30 s timer). If it is a stackable draw card it starts a new stack (no pending one exists). Voluntary draws when a playable card exists are **illegal**. |
-| N09 | Draw pile empties mid-draw | Reshuffle: top discard stays; all other discards **plus all set-aside eliminated hands** are shuffled into a new draw pile; draw continues. If still empty, the draw stops: Draw-Until-Play ends with the turn passing; Roulette ends and takes what was revealed; stack penalty gives what exists. |
-| N10 | 7-swap at high hand size | Swap is atomic. Hand sizes are exchanged. The mercy check runs afterward, so the player who *receives* ≥ 25 cards is eliminated immediately. A player already at ≥ 25 cannot exist (they would already be out). |
-| N11 | Swap with an eliminated player / when swap is the last card | Eliminated targets are not selectable. If the 7 is the player's **last** card, they win; no swap occurs. If only one opponent is active, the target is auto-selected. |
-| N12 | When is Mercy checked? | After each atomic action's effects complete (play, penalty absorption, Roulette, swap, 0-rotation), never mid-draw. Threshold is **≥ 25**. |
-| N13 | Simultaneous eliminations | All players with ≥ 25 are eliminated together (possible via 0 rotation or swap). If that would eliminate **everyone**, the player with the fewest cards (ties: first in seat order from the actor) survives and wins. |
-| N14 | Swapped-out player and UNO | Any player left holding exactly 1 card after a swap/rotation is "at UNO". They must call UNO; the catch window opens at that moment with the same rules as Classic (C14): closes when the next turn begins or after 5 000 ms. Penalty 2 cards. |
+| N08 | Draw Until You Can Play | A player with no playable card draws one card at a time (one `CARDS_DRAWN` event per card, reason `draw_until_play`) until a playable one appears. That card becomes the **only legal move** and must be played (no pass). Drawing is **illegal** while any card in hand is playable (`CANNOT_DRAW_WITH_PLAYABLE`). |
+| N09 | Draw pile empties mid-draw | Reshuffle: the top discard stays; every other discard is shuffled into a new draw pile (eliminated hands are already back in the pile, N17); drawing continues. If still empty, the draw stops: Draw-Until-Play and Roulette end with what was drawn and the turn passes; a stack gives what exists. |
+| N10 | 7-swap at high hand size | Moot: a hand can never reach the mercy limit without its owner being eliminated at once (N12), so every live hand is below it and a swap only exchanges two such hands. No special case is needed or implemented. |
+| N11 | 7 with one opponent / as the last card | The 7-player **always** chooses the target with `CHOOSE_SWAP_TARGET`, even with a single opponent. Eliminated and resigned players are not valid (`INVALID_SWAP_TARGET`). A 7 played as the **last card** wins the hand and no swap happens (so no player is ever swapped an empty hand). |
+| N12 | When is Mercy checked? | **After every card that is added to a hand** (penalty draws, Draw-Until-Play, Roulette, UNO penalty). The moment a hand reaches the threshold (default 25) the owner is eliminated and that draw stops mid-way. *(Phase 3: was "after the whole action".)* |
+| N13 | Simultaneous eliminations | Moot for the same reason as N10: swaps and rotations only move existing hands, and a draw eliminates one player at a time. |
+| N14 | Swapped/rotated player and UNO | Anyone left on exactly one card by a swap or rotation gets a UNO window (`unoPending`, 3 000 ms from the command's timestamp) and their called-UNO flag is reset. Anyone else may `CATCH_UNO` them for the usual 2-card penalty; they save themselves with `CALL_UNO`. The next player's turn action closes everyone else's window. |
 | N15 | UNO penalty amount | 2 cards. |
 | N16 | Elimination and stacking | Eliminated players leave turn order and cannot be stack targets. Elimination only occurs after resolution (N12), so no stack is pending on an eliminated seat; the next target is computed from the surviving seats. |
-| N17 | Eliminated hand | Set aside face-down (still counted in the table total). Returns to the pool at the next reshuffle (N09). Never discarded permanently. |
+| N17 | Eliminated hand | **Shuffled back into the draw pile immediately** (the whole pile is reshuffled with the match PRNG). *(Phase 3: was "set aside until the next reshuffle".)* |
 | N18 | Last player standing | When one non-eliminated player remains, they win immediately with `reason: "last_standing"`. |
 | N19 | Discard All timing | Playable on matching colour/number/symbol like any coloured card. After play, all other cards of that colour in hand go under it (order preserved). If this empties the hand, the player wins. Cards under it are not hidden from the reshuffle. |
 | N20 | Skip Everyone with a pending stack | Not playable (N02). Otherwise the same player acts again; in a 2-player game it equals Skip. |
 | N21 | 0-pass with eliminated seats | Hands rotate among active seats only. |
 | N22 | 0 as last card | Round ends; no rotation. |
 | N23 | Challenging | There is no challenge mechanic in No Mercy; all wild plays are always legal. |
-| N24 | Scoring | Winner receives the sum of opponents' remaining hands: number = face, coloured action (Skip, Reverse, +2, +4, Discard All, Skip Everyone) = 20, wild action (WRD4, WD6, WD10, Roulette) = 50. Eliminated players' hands are ignored. Plus **250 per knockout** achieved during the round. First to 1 000 wins the match (`matchMode: "points_1000"`); default `single_round` awards just the round win. |
-| N25 | Knockout credit | Credited to the player whose action caused the elimination (play, stack, swap, rotation). For self-inflicted elimination (draw penalty), no credit. |
+| N24 | Scoring | Winner receives the sum of opponents' remaining hands: number = face, coloured action (Skip, Reverse, +2, +4, Discard All, Skip Everyone) = 20, wild action (WRD4, WD6, WD10, Roulette) = 50. Eliminated players' hands are empty and score nothing. Plus **250 for each player eliminated during the hand**, paid to the winner. First to `targetScore` (e.g. 1 000) wins a multi-hand match; the default is a single hand. |
+| N25 | Knockout bonus | Paid to the hand's **winner** for every player eliminated that hand, whoever caused it (this follows the printed rule). *(Phase 3: was "credited to the causing player".)* |
 | N26 | Disconnect, timeouts, all-timeout | Same as Classic C26–C29. A forfeited player's hand is set aside as an eliminated hand (N17) and they count as eliminated without knockout credit. |
 | N27 | Turn timer expiry auto-actions | Facing penalty: absorb it. No-playable state: draw-until-play auto-plays the first legal card using the smallest-value legal option; wild colours default to the most common colour in hand. Roulette colour: most common colour in hand. |
 | N28 | Opening card | Always a number card (§2). |
@@ -117,6 +117,19 @@ Playable = matches active colour, number, or symbol; wilds always playable **exc
 | `matchMode` | `single_round` |
 | `turnTimerMs` | 30 000 |
 
-## 7. Engine test matrix
+## 7. Implementation notes (Phase 3)
+
+- One engine, two variants: `createInitialState("no_mercy", ...)`. Variant-specific state fields (`pendingPenalty`, `eliminatedPlayerIds`, `swapTargetAwaiting`, `colorRouletteActive`, `unoPending`) are `null` / empty in Classic; turn advance, win check, scoring, UNO and the views are shared.
+- New phases: `facing_penalty`, `awaiting_swap_target`, `awaiting_roulette_color`. New command: `CHOOSE_SWAP_TARGET`. `CHOOSE_COLOR` is also how a Roulette target names their colour.
+- New typed rejections: `STACK_TOO_LOW`, `MUST_STACK_OR_DRAW`, `CANNOT_DRAW_WITH_PLAYABLE`, `MUST_PLAY_DRAWN_CARD`, `SWAP_TARGET_PENDING`, `NO_SWAP_PENDING`, `INVALID_SWAP_TARGET`, `PLAYER_ELIMINATED`.
+- Card ids carry an `N` prefix (`N<seed>-<index>`); Classic ids are unchanged.
+- Wild Color Roulette: the target names a colour (it becomes the active colour), then reveals one card at a time until one of that colour (Wilds never match), keeping every card, then loses their turn. The revealed cards are public. A Roulette played as the last card wins immediately with no effect.
+- Wild Reverse Draw Four stacks as value 4 and reverses direction each time it is played. With two players the reverse acts as a skip, so the player who played it faces the penalty (and may stack it back); each further Reverse Draw Four lands on them again.
+- A penalty card played as the last card wins the hand; the next player draws the whole stack first so it counts in scoring.
+- Discard All sets the active colour to its own colour, discards every other card of that colour underneath it, and wins if that empties the hand.
+- Resigning while facing a penalty, a swap choice or a roulette voids it and passes the turn.
+- Opening card: always a number; an action or Wild turned up is put on the bottom of the pile.
+
+## 8. Engine test matrix
 
 Each of N01–N30 has a seeded scenario test. Additionally: property tests for card conservation (total cards in hands + draw + discard + set-aside is always 168) and for `rulesVersion` replay determinism.

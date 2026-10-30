@@ -8,7 +8,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit && tsc --noEmit -p demo",
     "test": "vitest run",
-    "demo:classic": "tsx demo/classic.ts"
+    "demo:classic": "tsx demo/classic.ts",
+    "demo:no_mercy": "tsx demo/no-mercy.ts"
   },
   "dependencies": {
     "@uno/shared": "*"

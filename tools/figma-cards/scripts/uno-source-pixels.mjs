@@ -8,6 +8,7 @@ const manifest = JSON.parse(
 const artwork = new Map()
 
 for (const [key, entry] of Object.entries(manifest)) {
+  if (entry.rendering === "vector") continue
   const png = await readFile(new URL(entry.file, directory))
   if (createHash("sha256").update(png).digest("hex") !== entry.pngSha256) {
     throw new Error(`Reference pixels changed unexpectedly: ${entry.file}`)

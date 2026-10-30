@@ -21,7 +21,8 @@
     "dev:worker": "npm run dev -w apps/worker",
     "deploy:staging": "npm run build && npm run deploy:staging -w apps/worker",
     "check:contract": "bash scripts/check-contract.sh",
-    "demo:classic": "npm run demo:classic -w packages/engine --"
+    "demo:classic": "npm run demo:classic -w packages/engine --",
+    "demo:no_mercy": "npm run demo:no_mercy -w packages/engine --"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

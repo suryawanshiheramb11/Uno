@@ -756,6 +756,11 @@ exports[`determinism > matches a stored JSON snapshot of the state after 40 comm
  "matchWinnerId": null,
  "handResults": [],
  "summary": null,
- "version": 40
+ "version": 40,
+ "pendingPenalty": null,
+ "eliminatedPlayerIds": [],
+ "swapTargetAwaiting": null,
+ "colorRouletteActive": null,
+ "unoPending": []
 }"
 `;

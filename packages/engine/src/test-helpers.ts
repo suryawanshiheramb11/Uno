@@ -1,14 +1,15 @@
 import { expect } from "vitest";
-import { CLASSIC_DEFS, DECK_SIZE, cardDefOf, makeCardId } from "./cards";
+import type { Variant } from "@uno/shared";
+import { cardDefOf, deckSizeOf, defsFor, makeCardId } from "./cards";
 import { applyCommand, createInitialState } from "./engine";
 import { createRng } from "./rng";
 import { COLORS } from "./types";
 import type {
   CardDef,
-  ClassicConfig,
   Color,
   Command,
   EngineEvent,
+  GameConfig,
   GameState,
   Phase,
   RejectReason,
@@ -21,6 +22,10 @@ function matcher(spec: string): (d: CardDef) => boolean {
   const base = spec.split("#")[0] as string;
   if (base === "wild") return (d) => d.face === "wild";
   if (base === "wd4") return (d) => d.face === "wild_draw_four";
+  if (base === "wrd4") return (d) => d.face === "wild_reverse_draw_four";
+  if (base === "wd6") return (d) => d.face === "wild_draw_six";
+  if (base === "wd10") return (d) => d.face === "wild_draw_ten";
+  if (base === "roulette") return (d) => d.face === "wild_color_roulette";
   const [color, rest] = base.split(/-(.+)/) as [string, string];
   if (/^\d$/.test(rest))
     return (d) => d.color === color && d.face === "number" && d.value === Number(rest);
@@ -28,6 +33,7 @@ function matcher(spec: string): (d: CardDef) => boolean {
 }
 
 export interface SetupOpts {
+  variant?: Variant;
   hands: Record<string, string[]>;
   top: string;
   color?: Color;
@@ -39,7 +45,15 @@ export interface SetupOpts {
   pending?: { playedBy: string; target: string; prev: Color; matching: boolean };
   unoWindow?: { playerId: string; openedAt: number };
   unoCalled?: string[];
-  config?: Partial<ClassicConfig>;
+  config?: Partial<GameConfig>;
+  // ---- No Mercy ----
+  /** A stacked penalty the current player is facing. */
+  penalty?: { total: number; topValue: number };
+  eliminated?: string[];
+  /** The current player has just played a 7 and must choose a swap target. */
+  swapAwaiting?: boolean;
+  /** A Color Roulette is waiting for its target (the current player) to name a colour. */
+  roulette?: { playedBy: string };
   /** Where cards not mentioned go: the draw pile (default) or under the top of the discard pile. */
   fillerTo?: "draw" | "discard";
   scores?: Record<string, number>;
@@ -53,7 +67,9 @@ export interface Setup {
 /** Builds an exact mid-hand situation with all 108 cards accounted for. */
 export function setup(o: SetupOpts): Setup {
   const players = Object.keys(o.hands);
-  const state = createInitialState("classic", players, o.config ?? {}, createRng(1));
+  const variant = o.variant ?? "classic";
+  const defs = defsFor(variant);
+  const state = createInitialState(variant, players, o.config ?? {}, createRng(1));
   const used = new Set<number>();
   const ids = new Map<string, string>();
   const placed = new Set<string>();
@@ -61,10 +77,10 @@ export function setup(o: SetupOpts): Setup {
     const known = ids.get(spec);
     if (known) return known;
     const m = matcher(spec);
-    const idx = CLASSIC_DEFS.findIndex((d, i) => !used.has(i) && m(d));
+    const idx = defs.findIndex((d, i) => !used.has(i) && m(d));
     if (idx < 0) throw new Error(`setup: no card left for "${spec}"`);
     used.add(idx);
-    const id = makeCardId(SEED, idx);
+    const id = makeCardId(SEED, idx, variant);
     ids.set(spec, id);
     return id;
   };
@@ -83,7 +99,9 @@ export function setup(o: SetupOpts): Setup {
   const draw = (o.draw ?? []).map(place);
   if (o.drawn) alloc(o.drawn);
   const filler: string[] = [];
-  for (let i = 0; i < DECK_SIZE; i++) if (!used.has(i)) filler.push(makeCardId(SEED, i));
+  for (let i = 0; i < deckSizeOf(variant); i++) {
+    if (!used.has(i)) filler.push(makeCardId(SEED, i, variant));
+  }
   if (o.fillerTo === "discard") {
     state.discardPile = [...filler, top];
     state.drawPile = [...draw].reverse();
@@ -114,6 +132,22 @@ export function setup(o: SetupOpts): Setup {
     state.currentSeat = players.indexOf(o.pending.target);
   }
   if (o.unoWindow) state.unoWindow = o.unoWindow;
+  state.eliminatedPlayerIds = o.eliminated ?? [];
+  if (o.penalty) {
+    state.pendingPenalty = { ...o.penalty };
+    state.phase = "facing_penalty";
+  }
+  if (o.swapAwaiting) {
+    state.swapTargetAwaiting = { playerId: players[state.currentSeat] as string };
+    state.phase = "awaiting_swap_target";
+  }
+  if (o.roulette) {
+    state.colorRouletteActive = {
+      playedById: o.roulette.playedBy,
+      targetId: players[state.currentSeat] as string,
+    };
+    state.phase = "awaiting_roulette_color";
+  }
   return { state, id: (spec) => ids.get(spec) ?? alloc(spec) };
 }
 
@@ -171,9 +205,10 @@ export function expectRejected(state: GameState, command: Command, reason: Rejec
 export function started(
   seed: number,
   playerIds = ["a", "b", "c"],
-  config: Partial<ClassicConfig> = {},
+  config: Partial<GameConfig> = {},
+  variant: Variant = "classic",
 ) {
-  const s0 = createInitialState("classic", playerIds, config, createRng(seed));
+  const s0 = createInitialState(variant, playerIds, config, createRng(seed));
   const res = applyCommand(s0, cmd("START_HAND", playerIds[0] as string, {}, 0));
   return { initial: s0, ...res };
 }
@@ -181,9 +216,10 @@ export function started(
 export function findSeed(
   pred: (s: GameState, events: EngineEvent[]) => boolean,
   playerIds = ["a", "b", "c"],
+  variant: Variant = "classic",
 ): number {
   for (let seed = 1; seed < 20000; seed++) {
-    const r = started(seed, playerIds);
+    const r = started(seed, playerIds, {}, variant);
     if (pred(r.state, r.events)) return seed;
   }
   throw new Error("findSeed: no seed matched");
@@ -195,8 +231,24 @@ export function allCardIds(s: GameState): string[] {
 
 export function expectConserved(s: GameState): void {
   const all = allCardIds(s);
-  expect(all).toHaveLength(DECK_SIZE);
-  expect(new Set(all).size).toBe(DECK_SIZE);
+  const size = deckSizeOf(s.variant);
+  expect(all).toHaveLength(size);
+  expect(new Set(all).size).toBe(size);
 }
 
 export { COLORS };
+
+/**
+ * `n` distinct No Mercy number cards that match neither colour red nor number 5, so they are never
+ * playable on a red 5 (use them to pad a hand towards the mercy limit).
+ */
+export function junk(n: number): string[] {
+  const out: string[] = [];
+  for (const color of ["yellow", "green", "blue"]) {
+    for (let v = 0; v <= 9; v++) {
+      if (v === 5) continue;
+      out.push(`${color}-${v}`, `${color}-${v}#2`);
+    }
+  }
+  return out.slice(0, n);
+}

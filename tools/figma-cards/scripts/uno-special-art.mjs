@@ -32,9 +32,9 @@ ${path(shape.ink, `fill="${fill}"`)}
 }
 
 function tile(x, y, width, height, color, miniatureBack = false) {
-  return `<g transform="translate(${x} ${y})">
-<rect x="-13" y="14" width="${width}" height="${height}" rx="10" fill="#060606"/>
-<rect width="${width}" height="${height}" rx="10" fill="${color}" stroke="#111" stroke-width="6"/>
+  return `<g data-role="tile" transform="translate(${x} ${y})">
+<rect x="-13" y="14" width="${width}" height="${height}" rx="10" fill="#000"/>
+<rect width="${width}" height="${height}" rx="10" fill="${color}" stroke="#000" stroke-width="6"/>
 ${
   miniatureBack
     ? `<rect x="7" y="8" width="${width - 14}" height="${height - 16}" rx="3" fill="#151515" stroke="#fff" stroke-width="4"/>
@@ -169,7 +169,7 @@ function mercyTiles(action) {
       t(344, 214, "yellow") +
       t(183, 288, "blue") +
       t(269, 396, "red") +
-      diagonalReverse(155, 277, 253, 310)
+      cleanReverse(155, 277, 253, 310)
     )
   }
   if (action === "wild-draw-six") {
@@ -194,7 +194,7 @@ function mercyTiles(action) {
     [84, 573, "red"],
     [237, 504, "back"],
   ]
-    .map(([x, y, color]) => t(x, y, color, 109, 188))
+    .map(([x, y, color]) => t(x, y, color, 116, 195))
     .join("")
 }
 
@@ -207,13 +207,52 @@ function faces() {
   ]
     .map(
       ([x, y, color, angle]) =>
-        `<g transform="translate(${x} ${y}) rotate(${angle} 59 45)">
+        `<g data-role="face" transform="translate(${x} ${y}) rotate(${angle} 59 45)">
 ${path("M14 0H104Q118 0 118 14V65Q118 88 99 89Q92 88 87 84Q76 79 70 90Q59 106 47 90Q41 80 30 85Q5 98 0 75V14Q0 0 14 0Z", `fill="url(#tile-${color})" stroke="#161311" stroke-width="4"`)}
 <g fill="#111"><ellipse cx="44" cy="29" rx="4.4" ry="6"/><ellipse cx="72" cy="29" rx="4.4" ry="6"/></g>
 ${path("M34 66Q57 37 82 66", 'fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"')}
 </g>`,
     )
     .join("")
+}
+
+function cleanReverse(x, y, width, height) {
+  return `<g transform="translate(${x} ${y}) scale(${width / 360} ${height / 440})">
+${path("M184 8H349Q354 8 352 24L327 172Q325 182 308 193Q296 202 281 198L265 184C286 216 283 253 265 280C249 302 213 333 183 362L201 385Q211 400 198 414L176 433H8Q3 433 5 422L30 269Q35 257 52 247Q66 238 79 244L95 260C74 226 74 194 87 170C101 143 139 112 174 78L159 61Q147 46 158 31L177 12Q180 8 184 8Z", 'fill="#000"')}
+${path("M145 240C122 214 113 198 118 175C124 151 137 135 153 122L221 65L191 30Q185 23 191 23H337L314 169Q314 173 310 170L276 129Z", 'fill="#fff"')}
+${path("M105 292L230 186Q237 179 240 182C256 201 266 222 263 243C261 267 249 285 230 301L160 355L189 390Q196 398 190 399H45Q42 399 43 394L67 253Q68 247 73 253Z", 'fill="#fff"')}
+</g>`
+}
+
+export function cleanMercyWildArtwork(action, { drawIndex }) {
+  const roulette = action === "wild-color-roulette"
+  const count = {
+    "wild-reverse-draw-four": 4,
+    "wild-draw-six": 6,
+    "wild-draw-ten": 10,
+  }[action]
+  if (!roulette && !count)
+    throw new Error(`Unsupported clean wild card: ${action}`)
+  const corner = roulette
+    ? `<g transform="translate(51 48) scale(.62)">${faces()}</g>`
+    : action === "wild-reverse-draw-four"
+      ? cleanReverse(57, 62, 63, 77) +
+        `<g transform="translate(63 0)">${drawIndex(4)}</g>`
+      : drawIndex(count)
+  return `<desc>Clean scalable vector print: smooth curves, straight tile edges, pure black background, and no photographic wear.</desc>
+<defs><clipPath id="face-clip"><rect width="570" height="890" rx="35"/></clipPath></defs>
+<rect data-role="background" width="570" height="890" rx="35" fill="#000000"/>
+${mercyGradients()}
+<g data-role="print" clip-path="url(#face-clip)">
+${ellipse("#fff", "none", 182, 393, 31)}
+<g data-role="main-symbol">${
+    roulette
+      ? `<g transform="translate(61 267) scale(1.45)">${faces()}</g>`
+      : mercyTiles(action)
+  }</g>
+<g data-role="corner-index">${corner}</g>
+<g data-role="corner-index" transform="rotate(180 285 445)">${corner}</g>
+</g>`
 }
 
 function mercyWear() {

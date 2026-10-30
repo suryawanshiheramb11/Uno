@@ -11,7 +11,8 @@ import {
   createRng,
   getLegalMoves,
 } from "../src/index";
-import type { Color, Command, EngineEvent, GameState, LegalMove } from "../src/index";
+import type { Color, Command, GameState, LegalMove } from "../src/index";
+import { describeEvent } from "./log";
 
 /** Omit that distributes over the Command union (plain Omit would collapse it). */
 type Draft = Command extends infer C
@@ -31,58 +32,6 @@ const NAMES = ["Ada", "Ben", "Cleo", "Dev", "Eli", "Fay", "Gus", "Hana", "Ivo", 
 const ids = NAMES.slice(0, count);
 
 const cards = (list: string[]) => list.map(cardLabel).join(", ");
-const nameOf = (id: string) => id;
-
-function describe(e: EngineEvent, state: GameState): string | null {
-  switch (e.type) {
-    case "HAND_STARTED":
-      return `Hand ${e.handNumber} dealt. Dealer ${e.dealerId}; ${e.firstPlayerId} is first.`;
-    case "OPENING_CARD_RESHUFFLED":
-      return `Opening card was ${cardLabel(e.cardId)}: shuffled back into the pile, flipping again.`;
-    case "OPENING_CARD":
-      return `Opening card: ${cardLabel(e.cardId)}`;
-    case "CARD_PLAYED":
-      return `${nameOf(e.playerId)} plays ${cardLabel(e.cardId)}${e.chosenColor ? ` and calls ${e.chosenColor}` : ""}`;
-    case "CARDS_DRAWN":
-      return `${nameOf(e.playerId)} draws ${e.count} (${e.reason.replace(/_/g, " ")})`;
-    case "TURN_CHANGED":
-      return `   -> ${nameOf(e.playerId)}'s turn (${e.direction === 1 ? "clockwise" : "counter-clockwise"})`;
-    case "TURN_PASSED":
-      return `${nameOf(e.playerId)} keeps the drawn card and passes`;
-    case "DIRECTION_REVERSED":
-      return `Direction reverses`;
-    case "PLAYER_SKIPPED":
-      return `${nameOf(e.playerId)} is skipped (${e.reason.replace(/_/g, " ")})`;
-    case "COLOR_CHOSEN":
-      // A Wild's colour is already part of its "plays ... and calls" line.
-      return state.discardPile.length > 1 || state.phase === "awaiting_opening_color"
-        ? null
-        : `${nameOf(e.playerId)} chooses ${e.color}`;
-    case "UNO_CALLED":
-      return `${nameOf(e.playerId)} calls UNO!`;
-    case "UNO_CAUGHT":
-      return `${nameOf(e.catcherId)} catches ${nameOf(e.targetId)} without UNO!`;
-    case "CHALLENGE_RESOLVED":
-      return `${nameOf(e.challengerId)} challenges ${nameOf(e.accusedId)}: ${e.success ? "SUCCESS, the bluff is exposed" : "FAILED, the play was legal"}`;
-    case "CHALLENGE_DECLINED":
-      return `${nameOf(e.playerId)} declines to challenge`;
-    case "DRAW_PILE_RESHUFFLED":
-      return `Draw pile empty: reshuffled ${e.cardCount} cards from the discard pile`;
-    case "HAND_WON": {
-      const scores = Object.entries(e.scores)
-        .map(([id, s]) => `${id} ${s}`)
-        .join(", ");
-      return `*** ${nameOf(e.winnerId)} WINS THE HAND for ${e.points} points (${scores})`;
-    }
-    case "MATCH_ENDED":
-      return `Match over: ${e.summary.winnerId} (${e.summary.endReason}). Placements: ${e.summary.players.map((p) => `${p.placement}. ${p.id}`).join(", ")}`;
-    case "COMMAND_REJECTED":
-      return `!! REJECTED ${e.commandType} from ${e.playerId}: ${e.reason}`;
-    default:
-      void state;
-      return null;
-  }
-}
 
 // A deliberately simple table of bots; the server will use the real bot package later.
 const policy = createRng(seed + 99);
@@ -132,10 +81,10 @@ const send = (c: Draft) => {
   clock += 700 + Math.floor(policy.next() * 900);
   const res = applyCommand(state, { ...c, commandId: `demo-${++n}`, at: clock } as Command);
   state = res.state;
-  for (const e of res.events) {
-    const line = describe(e, state);
+  res.events.forEach((e, i) => {
+    const line = describeEvent(e, res.events[i - 1]);
     if (line) console.log(line);
-  }
+  });
   return res.events;
 };
 

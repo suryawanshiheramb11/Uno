@@ -1,7 +1,23 @@
+import type { Variant } from "@uno/shared";
+
 export type Color = "red" | "yellow" | "green" | "blue";
 export const COLORS: readonly Color[] = ["red", "yellow", "green", "blue"];
 
-export type Face = "number" | "skip" | "reverse" | "draw_two" | "wild" | "wild_draw_four";
+export type Face =
+  | "number"
+  | "skip"
+  | "reverse"
+  | "draw_two"
+  | "wild"
+  | "wild_draw_four"
+  // No Mercy only
+  | "draw_four"
+  | "discard_all"
+  | "skip_everyone"
+  | "wild_reverse_draw_four"
+  | "wild_draw_six"
+  | "wild_draw_ten"
+  | "wild_color_roulette";
 
 /** Static definition of a card. The id -> definition mapping is a pure function of the id. */
 export interface CardDef {
@@ -25,6 +41,21 @@ export interface ClassicConfig {
   targetScore: number | null;
 }
 
+/** Extra settings that only exist in No Mercy games (absent from a Classic config). */
+export interface NoMercyConfigExtras {
+  /** A hand at or above this size eliminates its owner. */
+  mercyThreshold: number;
+  /** 7 swaps hands, 0 rotates hands. */
+  sevenZeroRules: boolean;
+}
+
+export type GameConfig = ClassicConfig & Partial<NoMercyConfigExtras>;
+
+export const DEFAULT_NO_MERCY_EXTRAS: NoMercyConfigExtras = {
+  mercyThreshold: 25,
+  sevenZeroRules: true,
+};
+
 export const DEFAULT_CLASSIC_CONFIG: ClassicConfig = {
   initialHandSize: 7,
   unoWindowMs: 3000,
@@ -39,6 +70,9 @@ export type Phase =
   | "awaiting_play_or_draw"
   | "play_or_draw"
   | "awaiting_challenge"
+  | "facing_penalty"
+  | "awaiting_swap_target"
+  | "awaiting_roulette_color"
   | "hand_over"
   | "match_over";
 
@@ -47,6 +81,9 @@ export const IN_HAND_PHASES: readonly Phase[] = [
   "awaiting_play_or_draw",
   "play_or_draw",
   "awaiting_challenge",
+  "facing_penalty",
+  "awaiting_swap_target",
+  "awaiting_roulette_color",
 ];
 
 export interface PlayerState {
@@ -77,19 +114,26 @@ export interface HandResult {
   points: number;
 }
 
-export type EndReason = "hand_empty" | "points_target" | "forfeit";
+export type EndReason = "hand_empty" | "points_target" | "forfeit" | "last_standing";
 
 export interface MatchSummary {
-  variant: "classic";
+  variant: Variant;
   winnerId: string | null;
   endReason: EndReason;
   hands: HandResult[];
   players: Array<{ id: string; score: number; placement: number; resigned: boolean }>;
 }
 
+/** A stacked No Mercy draw penalty. The player facing it is always the current player. */
+export interface PendingPenalty {
+  total: number;
+  /** Value of the last card stacked; the next stack card must be at least this. */
+  topValue: number;
+}
+
 export interface GameState {
-  variant: "classic";
-  config: ClassicConfig;
+  variant: Variant;
+  config: GameConfig;
   phase: Phase;
   handNumber: number;
   handSeed: number;
@@ -114,6 +158,16 @@ export interface GameState {
   handResults: HandResult[];
   summary: MatchSummary | null;
   version: number;
+  // ---- No Mercy only: null / empty in Classic ----
+  pendingPenalty: PendingPenalty | null;
+  /** Players knocked out of the current hand by reaching the mercy threshold. */
+  eliminatedPlayerIds: string[];
+  /** Set after a 7 is played: that player must pick who to swap with. */
+  swapTargetAwaiting: { playerId: string } | null;
+  /** Set after a Wild Color Roulette: the target must name a colour, then reveals cards. */
+  colorRouletteActive: { playedById: string; targetId: string } | null;
+  /** UNO windows opened for players left on one card by a swap or rotation. */
+  unoPending: UnoWindow[];
 }
 
 // ---------------------------------------------------------------- commands
@@ -133,6 +187,7 @@ export type Command = CommandBase &
     | { type: "DRAW_CARD" }
     | { type: "PASS_TURN" }
     | { type: "CHOOSE_COLOR"; color: Color }
+    | { type: "CHOOSE_SWAP_TARGET"; targetId: string }
     | { type: "CALL_UNO" }
     | { type: "CATCH_UNO"; targetId: string }
     | { type: "CHALLENGE_WILD_DRAW_FOUR" }
@@ -170,7 +225,16 @@ export type RejectReason =
   | "NOTHING_TO_CATCH"
   | "UNO_WINDOW_CLOSED"
   | "CANNOT_CATCH_SELF"
-  | "ALREADY_VOTED";
+  | "ALREADY_VOTED"
+  // No Mercy
+  | "PLAYER_ELIMINATED"
+  | "STACK_TOO_LOW"
+  | "MUST_STACK_OR_DRAW"
+  | "CANNOT_DRAW_WITH_PLAYABLE"
+  | "MUST_PLAY_DRAWN_CARD"
+  | "SWAP_TARGET_PENDING"
+  | "NO_SWAP_PENDING"
+  | "INVALID_SWAP_TARGET";
 
 export type DrawReason =
   | "voluntary"
@@ -179,10 +243,14 @@ export type DrawReason =
   | "challenge_penalty"
   | "challenge_failed"
   | "uno_penalty"
-  | "opening_card";
+  | "opening_card"
+  // No Mercy
+  | "penalty"
+  | "draw_until_play"
+  | "color_roulette";
 
 export type SkipReason =
-  "skip" | "reverse_two_player" | "draw_two" | "wild_draw_four" | "opening_card";
+  "skip" | "reverse_two_player" | "draw_two" | "wild_draw_four" | "opening_card" | "skip_everyone";
 
 export type EngineEvent =
   | {
@@ -209,6 +277,13 @@ export type EngineEvent =
   | { type: "PLAYER_RESIGNED"; playerId: string; cardsReturned: number }
   | { type: "HAND_WON"; winnerId: string; points: number; scores: Record<string, number> }
   | { type: "MATCH_ENDED"; summary: MatchSummary }
+  | { type: "PENALTY_PENDING"; playerId: string; total: number; topValue: number }
+  | { type: "CARDS_DISCARDED"; playerId: string; cardIds: string[] }
+  | { type: "SWAP_TARGET_REQUESTED"; playerId: string }
+  | { type: "HANDS_SWAPPED"; a: string; b: string }
+  | { type: "HANDS_ROTATED"; direction: 1 | -1; deltas: Record<string, number> }
+  | { type: "ROULETTE_STARTED"; playerId: string; targetId: string }
+  | { type: "PLAYER_ELIMINATED"; playerId: string; cardsReturned: number }
   | { type: "REMATCH_VOTED"; playerId: string }
   | { type: "REMATCH_AGREED" }
   | { type: "SNAPSHOT_REQUESTED"; playerId: string }
@@ -228,6 +303,7 @@ export type LegalMove =
   | { type: "DRAW_CARD" }
   | { type: "PASS_TURN" }
   | { type: "CHOOSE_COLOR"; color: Color }
+  | { type: "CHOOSE_SWAP_TARGET"; targetId: string }
   | { type: "CALL_UNO" }
   | { type: "CATCH_UNO"; targetId: string }
   | { type: "CHALLENGE_WILD_DRAW_FOUR" }
@@ -242,11 +318,13 @@ export interface PublicPlayer {
   score: number;
   unoCalled: boolean;
   resigned: boolean;
+  /** Knocked out of the current hand (No Mercy). */
+  eliminated: boolean;
 }
 
 /** Everything every viewer (including spectators) may see. Never contains card ids from hands or the draw pile. */
 export interface PublicSnapshot {
-  variant: "classic";
+  variant: Variant;
   version: number;
   phase: Phase;
   handNumber: number;
@@ -263,6 +341,12 @@ export interface PublicSnapshot {
   matchWinnerId: string | null;
   rematchVotes: string[];
   summary: MatchSummary | null;
+  // ---- No Mercy only: null / empty in Classic ----
+  pendingPenalty: { total: number; topValue: number; targetId: string } | null;
+  eliminatedPlayerIds: string[];
+  swapTargetPlayerId: string | null;
+  rouletteTargetId: string | null;
+  unoPendingWindows: Array<{ playerId: string; closesAt: number }>;
 }
 
 export interface PrivateSnapshot extends PublicSnapshot {

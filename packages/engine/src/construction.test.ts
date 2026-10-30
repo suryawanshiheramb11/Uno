@@ -42,9 +42,9 @@ describe("state construction", () => {
     expect(() => create(Array.from({ length: 11 }, (_, i) => `p${i}`))).toThrow(/2-10/));
   it("rejects duplicate player ids", () => expect(() => create(["a", "a"])).toThrow(EngineError));
   it("rejects empty player ids", () => expect(() => create(["a", ""])).toThrow(EngineError));
-  it("rejects the no_mercy variant with UNSUPPORTED_VARIANT", () => {
+  it("rejects an unknown variant with UNSUPPORTED_VARIANT", () => {
     try {
-      createInitialState("no_mercy", ["a", "b"], {}, createRng(1));
+      createInitialState("chess" as never, ["a", "b"], {}, createRng(1));
       expect.unreachable();
     } catch (e) {
       expect((e as EngineError).code).toBe("UNSUPPORTED_VARIANT");

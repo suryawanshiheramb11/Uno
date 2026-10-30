@@ -13,8 +13,10 @@
 
 Two kinds of file:
 
-- **106 vector SVGs** (number cards, backs, and all No Mercy coloured actions), generated deterministically.
-- **18 raster-in-SVG cards** (12 Classic coloured actions, Classic Wild and Wild Draw Four, the 4 No Mercy wilds). Each embeds a PNG as a base64 `data:` URI. These are not editable vectors.
+- **110 vector SVGs** (number cards, backs, all No Mercy coloured actions and the four No Mercy wilds), generated deterministically.
+- **14 raster-in-SVG cards** (the 12 Classic Skip/Reverse/Draw Two cards plus Classic Wild and Wild Draw Four). Each embeds a PNG as a base64 `data:` URI. These are not editable vectors.
+
+*Re-synced from Figma after the design changed: the four Classic Draw Two cards got new, centred +2 artwork, and the four No Mercy wilds (Wild Reverse Draw Four, Draw Six, Draw Ten, Color Roulette) became clean scalable vector instead of an embedded photo restoration.*
 
 ## 2. Geometry (from the design, fixed)
 
@@ -67,7 +69,7 @@ The design file ships its own generator; it is vendored unchanged in `tools/figm
 
 - Regenerate: `node tools/figma-cards/scripts/generate-uno-cards.mjs` → writes `tools/figma-cards/public/cards/**`; copy into `apps/web/src/assets/cards/`.
 - Verify: `… generate-uno-cards.mjs --check` (staleness, no `<text>`/`<script>`, no external hrefs, no NaN geometry).
-- The 18 raster cards use the PNGs in `tools/figma-cards/scripts/reference-specials/` (copied from the Figma Make source). `manifest.json` there lists each file's size and SHA-256, and the generator refuses to run if any PNG differs. It is trimmed to the fields the generator uses; the full provenance manifest stays in the Figma Make file.
+- The 14 raster cards use the PNGs in `tools/figma-cards/scripts/reference-specials/` (copied from the Figma Make source). `manifest.json` there lists each file's size and SHA-256, and the generator refuses to run if any raster PNG differs. The four No Mercy wild PNGs are kept for reference only (`rendering: "vector"`) and are not embedded. It is trimmed to the fields the generator uses; the full provenance manifest stays in the Figma Make file.
 - Sync from Figma: read the Make source through the Figma MCP (`get_design_context` on the Make file key, then the `file://figma/make/source/...` resources).
 
 Verified: `generate-uno-cards.mjs --check` passes for all 124 cards; the PNG hashes match the Figma manifest; `classic/red-7.svg` is byte-identical to the file in the Figma Make source.
@@ -80,6 +82,7 @@ Imported by the Vite build, hashed, served by Cloudflare Static Assets with immu
 |---|---|---|
 | Vector card SVG | largest today 30 KB (`no-mercy/back.svg`) | project cap 100 KB |
 | Raster-in-SVG card | project cap 1.5 MB each | largest today 753 KB (`classic/wild.svg`) |
+| No Mercy wilds (now vector) | 4-7 KB each | were 96-149 KB as raster |
 | Whole set today | 6.8 MB raw (124 cards) | tracked by `scripts/bundle-size.mjs` once added |
 | Per-file Cloudflare limit | 25 MiB | not a constraint |
 | Initial page load | only the back + visible cards; faces lazy-loaded | |

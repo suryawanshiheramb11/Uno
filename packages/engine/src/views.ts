@@ -1,4 +1,4 @@
-import { getLegalMoves } from "./rules";
+import { getLegalMoves, isEliminated } from "./rules";
 import type { EngineEvent, GameState, PlayerState, PrivateSnapshot, PublicSnapshot } from "./types";
 import { EngineError } from "./types";
 
@@ -18,6 +18,7 @@ export function getPublicView(state: GameState): PublicSnapshot {
       score: p.score,
       unoCalled: p.unoCalled,
       resigned: p.resigned,
+      eliminated: isEliminated(state, p.id),
     })),
     currentPlayerId: inPlay && current ? current.id : null,
     direction: state.direction,
@@ -38,6 +39,19 @@ export function getPublicView(state: GameState): PublicSnapshot {
     matchWinnerId: state.matchWinnerId,
     rematchVotes: [...state.rematchVotes],
     summary: state.summary,
+    pendingPenalty: state.pendingPenalty
+      ? {
+          ...state.pendingPenalty,
+          targetId: (state.players[state.currentSeat] as { id: string }).id,
+        }
+      : null,
+    eliminatedPlayerIds: [...state.eliminatedPlayerIds],
+    swapTargetPlayerId: state.swapTargetAwaiting?.playerId ?? null,
+    rouletteTargetId: state.colorRouletteActive?.targetId ?? null,
+    unoPendingWindows: state.unoPending.map((w) => ({
+      playerId: w.playerId,
+      closesAt: w.openedAt + state.config.unoWindowMs,
+    })),
   };
 }
 
@@ -61,7 +75,8 @@ export function getPlayerView(state: GameState, playerId: string): PrivateSnapsh
 /** Strips private card ids from events before they are sent to a given viewer. */
 export function filterEventsForViewer(events: EngineEvent[], viewerId: string): EngineEvent[] {
   return events.map((e) => {
-    if (e.type === "CARDS_DRAWN" && e.playerId !== viewerId) {
+    // Color Roulette reveals its cards to the whole table; every other draw is private.
+    if (e.type === "CARDS_DRAWN" && e.playerId !== viewerId && e.reason !== "color_roulette") {
       const { cardIds: _hidden, ...rest } = e;
       return rest;
     }

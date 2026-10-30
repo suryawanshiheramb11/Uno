@@ -1,10 +1,19 @@
+import type { Variant } from "@uno/shared";
 import { expect } from "vitest";
+import { cardDefOf } from "./cards";
 import { applyCommand, createInitialState } from "./engine";
 import { createRng } from "./rng";
-import { canPlayCard, getLegalMoves, isInHand } from "./rules";
-import { cardDefOf } from "./cards";
-import type { ClassicConfig, Color, Command, EngineEvent, GameState, LegalMove } from "./types";
+import { canPlayCard, getLegalMoves, isInHand, needsColorChoice } from "./rules";
 import { cmd, expectConserved } from "./test-helpers";
+import type {
+  Color,
+  Command,
+  EngineEvent,
+  GameConfig,
+  GameState,
+  LegalMove,
+  UnoWindow,
+} from "./types";
 
 export interface GameLog {
   initial: GameState;
@@ -15,47 +24,59 @@ export interface GameLog {
   steps: number;
 }
 
-/** After every accepted command: all 108 cards accounted for once, and legality is self-consistent. */
+const PLAY_PHASES = ["awaiting_play_or_draw", "play_or_draw", "facing_penalty"];
+
+/** After every accepted command: every card accounted for once, and legality is self-consistent. */
 export function checkInvariants(state: GameState): void {
   if (state.phase === "pre_hand") return;
   expectConserved(state);
   if (!isInHand(state)) return;
   const current = state.players[state.currentSeat];
-  if (!current || (state.phase !== "awaiting_play_or_draw" && state.phase !== "play_or_draw"))
-    return;
+  if (!current || !PLAY_PHASES.includes(state.phase)) return;
   const legal = new Set(
     getLegalMoves(state, current.id).flatMap((m: LegalMove) =>
       m.type === "PLAY_CARD" ? [m.cardId] : [],
     ),
   );
   for (const id of current.hand) {
-    const wild = cardDefOf(id).color === null;
     const res = applyCommand(
       state,
-      cmd("PLAY_CARD", current.id, wild ? { cardId: id, color: "red" } : { cardId: id }),
+      cmd(
+        "PLAY_CARD",
+        current.id,
+        needsColorChoice(cardDefOf(id)) ? { cardId: id, color: "red" } : { cardId: id },
+      ),
     );
     const accepted = res.events[0]?.type !== "COMMAND_REJECTED";
     expect(accepted, `card ${id} legal=${legal.has(id)} phase=${state.phase}`).toBe(legal.has(id));
-    if (state.phase === "awaiting_play_or_draw")
+    if (state.phase === "awaiting_play_or_draw" || state.phase === "facing_penalty") {
       expect(canPlayCard(state, current, id)).toBe(legal.has(id));
+    }
   }
 }
 
-export function playRandomGame(
-  seed: number,
-  opts: {
-    maxSteps?: number;
-    check?: boolean;
-    onStep?: () => void;
-    config?: Partial<ClassicConfig>;
-  } = {},
-): GameLog {
-  const n = 2 + (seed % 5);
-  const ids = Array.from({ length: n }, (_, i) => `p${i}`);
-  const config: Partial<ClassicConfig> =
-    opts.config ?? (seed % 3 === 0 ? { strictWildDrawFour: true } : {});
+export interface RandomGameOptions {
+  maxSteps?: number;
+  check?: boolean;
+  onStep?: () => void;
+  config?: Partial<GameConfig>;
+  variant?: Variant;
+  /** Player count; default cycles 2-6 with the seed. */
+  players?: number;
+  /** Continue a prepared game instead of dealing a new hand. */
+  initial?: GameState;
+}
+
+export function playRandomGame(seed: number, opts: RandomGameOptions = {}): GameLog {
+  const variant = opts.variant ?? "classic";
+  const n = opts.players ?? 2 + (seed % 5);
+  const ids = opts.initial
+    ? opts.initial.players.map((p) => p.id)
+    : Array.from({ length: n }, (_, i) => `p${i}`);
+  const config: Partial<GameConfig> =
+    opts.config ?? (variant === "classic" && seed % 3 === 0 ? { strictWildDrawFour: true } : {});
   const policy = createRng(seed * 7919 + 13);
-  const initial = createInitialState("classic", ids, config, createRng(seed));
+  const initial = opts.initial ?? createInitialState(variant, ids, config, createRng(seed));
   let state = initial;
   const states: GameState[] = [state];
   const events: EngineEvent[] = [];
@@ -77,8 +98,12 @@ export function playRandomGame(
     opts.onStep?.();
   };
   const pick = <T>(arr: T[]): T => arr[Math.floor(policy.next() * arr.length)] as T;
+  const activeIds = () =>
+    state.players
+      .filter((p) => !p.resigned && !state.eliminatedPlayerIds.includes(p.id))
+      .map((p) => p.id);
 
-  send(cmd("START_HAND", ids[0] as string, {}, clock));
+  if (state.phase === "pre_hand") send(cmd("START_HAND", ids[0] as string, {}, clock));
   let steps = 0;
   const maxSteps = opts.maxSteps ?? 6000;
   while (state.phase !== "match_over" && steps < maxSteps) {
@@ -86,8 +111,19 @@ export function playRandomGame(
     clock += 300 + Math.floor(policy.next() * 900);
     const w = state.unoWindow;
     if (w && clock - w.openedAt <= state.config.unoWindowMs && policy.next() < 0.35) {
-      const others = ids.filter((id) => id !== w.playerId);
+      const others = activeIds().filter((id) => id !== w.playerId);
       send(cmd("CATCH_UNO", pick(others), { targetId: w.playerId }, clock));
+      continue;
+    }
+    // No Mercy: players left on one card by a swap or rotation can be caught too.
+    const pending: UnoWindow | undefined = state.unoPending.find(
+      (x) =>
+        clock - x.openedAt <= state.config.unoWindowMs &&
+        state.players.find((p) => p.id === x.playerId)?.hand.length === 1,
+    );
+    if (pending && policy.next() < 0.35) {
+      const others = activeIds().filter((id) => id !== pending.playerId);
+      send(cmd("CATCH_UNO", pick(others), { targetId: pending.playerId }, clock));
       continue;
     }
     const actor = (state.players[state.currentSeat] as { id: string }).id;
@@ -96,6 +132,14 @@ export function playRandomGame(
     );
     if (moves.some((m) => m.type === "CALL_UNO") && policy.next() < 0.3) {
       send(cmd("CALL_UNO", actor, {}, clock));
+      continue;
+    }
+    const swaps = moves.filter(
+      (m): m is Extract<LegalMove, { type: "CHOOSE_SWAP_TARGET" }> =>
+        m.type === "CHOOSE_SWAP_TARGET",
+    );
+    if (swaps.length > 0) {
+      send(cmd("CHOOSE_SWAP_TARGET", actor, { targetId: pick(swaps).targetId }, clock));
       continue;
     }
     const plays = moves.filter(

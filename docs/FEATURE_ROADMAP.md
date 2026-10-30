@@ -27,7 +27,7 @@ Phase map: **0** specification · **1** scaffold + deploy pipeline + assets · *
 | 17 | Reconnect and resync (`resumeFromVersion`) | 2 | planned |
 | 18 | Chat | 2 | planned |
 | 19 | Classic rules engine (C01–C32) | 2 | done (297 tests; server-side clock/timeouts come with the room, Phase 3) |
-| 20 | No Mercy rules engine (N01–N30) | 3 | planned |
+| 20 | No Mercy rules engine (N01–N30) | 3 | done (253 No Mercy tests; 550 engine tests in total) |
 | 21 | Seeded shuffle + deterministic replays | 2 | done (engine); replay viewer later |
 | 22 | Table UI: hand, piles, direction, active colour | 3 | planned |
 | 23 | Colour picker, 7-swap target picker, Roulette picker | 3 | planned |
